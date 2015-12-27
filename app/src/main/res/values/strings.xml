@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">OMG Android</string>
+    <string name="action_settings">Settings</string>
+    <string name="texview">Hello World!</string>
+    <string name="button">BAS GAZA YAVRUM BAS GAZA!!!</string>
+    <string name="hint">Buraya İsim Yaz!!!</string>
+</resources>
