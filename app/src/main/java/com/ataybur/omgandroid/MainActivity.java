@@ -28,14 +28,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemClickListener {
+    private static final String QUERY_URL = "http://openlibrary.org/search.json?q=";
     TextView mainTextView;
     Button mainButton;
     EditText mainEditText;
     ListView mainListView;
-    ArrayAdapter mArrayAdapter;
+    JSONAdapter mJSONAdapter;
     ArrayList mNameList = new ArrayList();
     ShareActionProvider mShareActionProvider;
     private static final String PREFS = "prefs";
@@ -52,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 1. Access the TextView defined in layout XML
         // and then set its text
         mainTextView = (TextView) findViewById(R.id.textView1);
-        mainTextView.setText("Set in Java!");
 
         // 2. Access the Button defined in layout XML
         // and listen for it here
@@ -67,17 +74,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 4. Access the ListView
         mainListView = (ListView) findViewById(R.id.main_listview);
 
-// Create an ArrayAdapter for the ListView
-        mArrayAdapter = new ArrayAdapter(this,
-                R.layout.listview,
-                mNameList);
-
-// Set the ListView to use the ArrayAdapter
-        mainListView.setAdapter(mArrayAdapter);
         mainListView.setOnItemClickListener(this);
 
         // 7. Greet the user, or ask for their name if new
         displayWelcome();
+
+        // 10. Create a JSONAdapter for the ListView
+        mJSONAdapter = new JSONAdapter(this, getLayoutInflater());
+
+// Set the ListView to use the ArrayAdapter
+        mainListView.setAdapter(mJSONAdapter);
 
         mainEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -155,6 +161,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void queryBooks(String searchString) {
+
+        // Prepare your search string to be put in a URL
+        // It might have reserved characters or something
+        String urlString = "";
+        try {
+            urlString = URLEncoder.encode(searchString, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+
+            // if this fails for some reason, let the user know why
+            e.printStackTrace();
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        // Create a client to perform networking
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        // Have the client get a JSONArray of data
+        // and define how to respond
+        client.get(QUERY_URL + urlString,
+                new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(JSONObject jsonObject) {
+                        // Display a "Toast" message
+                        // to announce your success
+                        Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
+
+                        // update the data in your custom method.
+                        mJSONAdapter.updateData(jsonObject.optJSONArray("docs"));
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Throwable throwable, JSONObject error) {
+                        // Display a "Toast" message
+                        // to announce the failure
+                        Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(), Toast.LENGTH_LONG).show();
+
+                        // Log error message
+                        // to help solve any problems
+                        Log.e("omg android", statusCode + " " + throwable.getMessage());
+                    }
+                });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -212,32 +263,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void innerOnClick(){
-        // Take what was typed into the EditText
-        // and use in TextView
-        // Take what was typed into the EditText
-        // and use in TextView
-        String param = capitalizeFirstLetter(mainEditText.getText().toString());
-        mainTextView.setText(param
-                + " is learning Android development!");
-        // Also add that value to the list shown in the ListView
-        mNameList.add(param);
-        mArrayAdapter.notifyDataSetChanged();
-
-        ((InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE))
-                .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-
-        // 6. The text you'd like to share has changed,
-        // and you need to update
-        setShareIntent();
+        // 9. Take what was typed into the EditText and use in search
+        queryBooks(mainEditText.getText().toString());
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Log the item's position and contents
-        // to the console in Debug
-        String logMessage = position + ": " + mNameList.get(position);
-        Log.d("omg android", logMessage);
-        mainTextView.setText(logMessage
-                + " is learning Android development!");
+
     }
 }

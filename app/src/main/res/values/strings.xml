@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">OMG Android</string>
+    <string name="app_name">Bookmaster General</string>
     <string name="action_settings">Settings</string>
-    <string name="texview">Hello World!</string>
-    <string name="button">BAS GAZA YAVRUM BAS GAZA!!!</string>
-    <string name="hint">Buraya İsim Yaz!!!</string>
+    <string name="texview">Search For Books!</string>
+    <string name="button">Search</string>
+    <string name="hint">Title and/or Author</string>
 </resources>
