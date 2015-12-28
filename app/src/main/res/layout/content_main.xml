@@ -15,19 +15,23 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
+        android:textSize="26sp"
         android:text="@string/texview" />
     <!-- This nested layout contains views of its own -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:orientation="horizontal">
         <!-- Set OnClickListener to trigger results when pressed -->
         <Button
             android:id="@+id/main_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="26sp"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
+
             android:text="@string/button" />
         <!-- Shows an image from your drawable resources -->
         <ImageView
@@ -46,7 +50,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
-        android:hint="@string/hint" />
+        android:textSize="26sp"
+        android:hint="@string/hint"
+        android:inputType="textCapSentences"
+        android:imeOptions="actionDone"/>
 
     <!-- List whose dataset is defined in code with an adapter -->
     <ListView
