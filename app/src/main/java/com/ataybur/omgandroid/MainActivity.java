@@ -1,6 +1,7 @@
 package com.ataybur.omgandroid;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String PREFS = "prefs";
     private static final String PREF_NAME = "name";
     SharedPreferences mSharedPreferences;
+    ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 // Set the ListView to use the ArrayAdapter
         mainListView.setAdapter(mJSONAdapter);
+
+        mDialog = new ProgressDialog(this);
+        mDialog.setMessage("Searching for Book");
+        mDialog.setCancelable(false);
 
         mainEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -178,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Create a client to perform networking
         AsyncHttpClient client = new AsyncHttpClient();
 
+        // Show ProgressDialog to inform user that a task in the background is occurring
+        mDialog.show();
+
         // Have the client get a JSONArray of data
         // and define how to respond
         client.get(QUERY_URL + urlString,
@@ -185,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
+                        // 11. Dismiss the ProgressDialog
+                        mDialog.dismiss();
                         // Display a "Toast" message
                         // to announce your success
                         Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
@@ -195,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFailure(int statusCode, Throwable throwable, JSONObject error) {
+                        // 11. Dismiss the ProgressDialog
+                        mDialog.dismiss();
                         // Display a "Toast" message
                         // to announce the failure
                         Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(), Toast.LENGTH_LONG).show();
@@ -269,6 +282,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+// 12. Now that the user's chosen a book, grab the cover data
+        JSONObject jsonObject = (JSONObject) mJSONAdapter.getItem(position);
+        String coverID = jsonObject.optString("cover_i","");
 
+// create an Intent to take you over to a new DetailActivity
+        Intent detailIntent = new Intent(this, DetailActivity.class);
+
+// pack away the data about the cover
+// into your Intent before you head out
+        detailIntent.putExtra("coverID", coverID);
+
+// TODO: add any other data you'd like as Extras
+
+// start the next Activity using your prepared Intent
+        startActivity(detailIntent);
     }
 }
