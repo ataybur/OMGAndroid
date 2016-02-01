@@ -284,7 +284,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 // 12. Now that the user's chosen a book, grab the cover data
         JSONObject jsonObject = (JSONObject) mJSONAdapter.getItem(position);
-        String coverID = jsonObject.optString("cover_i","");
+        String coverID = jsonObject.optString("cover_i", "");
+        String bookTitle = "";
+        String authorName = "";
+
+        if (jsonObject.has("title")) {
+            bookTitle = jsonObject.optString("title");
+        }
+
+        if (jsonObject.has("author_name")) {
+            authorName = jsonObject.optJSONArray("author_name").optString(0);
+        }
 
 // create an Intent to take you over to a new DetailActivity
         Intent detailIntent = new Intent(this, DetailActivity.class);
@@ -292,6 +302,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 // pack away the data about the cover
 // into your Intent before you head out
         detailIntent.putExtra("coverID", coverID);
+        detailIntent.putExtra("bookTitle", bookTitle);
+        detailIntent.putExtra("authorName", authorName);
 
 // TODO: add any other data you'd like as Extras
 

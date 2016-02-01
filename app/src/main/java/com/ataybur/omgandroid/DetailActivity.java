@@ -9,6 +9,7 @@ import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,9 +33,23 @@ public class DetailActivity extends AppCompatActivity {
 
         // Access the imageview from XML
         ImageView imageView = (ImageView) findViewById(R.id.img_cover);
+        TextView titleTextView = (TextView) findViewById(R.id.text_title);
+        TextView authorTextView = (TextView) findViewById(R.id.text_author);
 
         // 13. unpack the coverID from its trip inside your Intent
         String coverID = this.getIntent().getExtras().getString("coverID");
+
+        String bookTitle = this.getIntent().getExtras().getString("bookTitle");
+
+        String authorName = this.getIntent().getExtras().getString("authorName");
+
+        if (bookTitle.length() > 0) {
+            titleTextView.setText(bookTitle);
+        }
+
+        if (authorName.length() > 0) {
+            authorTextView.setText(authorName);
+        }
 
 // See if there is a valid coverID
         if (coverID.length() > 0) {
